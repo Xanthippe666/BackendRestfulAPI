@@ -16,10 +16,14 @@ One needs to have the following already installed:
 * Mysql
 
 Before starting the server, start-up the mysql database. This can be done for example by running the following command in a terminal
-<br>
+
 `mysqld --console`
 
-Also one needs to build the dependencies for the node.js server. This can be done by typing the following command in this project's main folder,
+Next, clone the github project,
+
+`git clone https://github.com/Xanthippe666/BackendRestfulAPI.git`
+
+Also one needs to build the dependencies for the node.js server. This can be done by typing the following command once inside the main folder,
 
 `npm install`
 
@@ -29,8 +33,10 @@ After downloading all the dependencies, one can then start the node.js server by
 npm start
 `
 
-The server will then start running on localhost through port 2333. If the server fails to connect, the database configuration may be incorrect. Mysql admin username, password, and host 
-settings can be changed in the file named "dbConfig.js" under the folder called "db"
+The server will then start running on localhost through port 2333. If the server fails to connect, the database configuration may be incorrect. Mysql admin‘s username, password, and host settings can be changed in the file named "dbConfig.js" under the folder called "db". Server port settings (default: 2333) can be changed in the file named "index.js" under the main folder
+
+###Testing the API
+API testing can be done in postman, curl, advanced Rest client, etc.
 
 ### API summary
 - register
@@ -39,3 +45,4 @@ settings can be changed in the file named "dbConfig.js" under the folder called 
 - post comment
 - add friend
 - view friends
+- () view users
