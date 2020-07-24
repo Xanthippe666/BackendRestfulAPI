@@ -35,6 +35,9 @@ npm start
 
 The server will then start running on localhost through port 2333. If the server fails to connect, the database configuration may be incorrect. Mysql admin‘s username, password, and host settings can be changed in the file named "dbConfig.js" under the folder called "db". Server port settings (default: 2333) can be changed in the file named "index.js" under the main folder
 
+### Database start-up and initial data
+Every time the server starts, a new database is created or re-created (nodetest333, can be changed in the dbConfig.js file). Then, three initial users (two adults, one under 18) and all the comments in the file "comments.json" located under the folder called "public" are loaded into the database. No pair of users are added as friends yet.
+
 ### Testing the API
 API testing can be done in postman, curl, advanced Rest client, etc.
 
