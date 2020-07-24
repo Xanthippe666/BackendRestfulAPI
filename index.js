@@ -26,6 +26,11 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(multipart());
 
+//Set-up express's session capabilities
+const session = require('express-session')
+app.use(session({ secret: 'keyboard cat',resave: false,
+     saveUninitialized: true,}))
+
 ////////////////////////ROUTERS FOR RESTFUL API//////////////////
 //Set-up routers for back-end API
 const userRouter = require('./router/userRouter')

@@ -33,4 +33,22 @@ function handleError(e, res){
 		}
 }
 
-module.exports = handleError;
+function handleNoLogin(req, res){
+	if(req.session.username == undefined || req.session.username.length == 0){
+		res.send({
+			status: "failed",
+			message: "No user logged-in! Please log-in before viewing comments"
+		})
+		return;
+	}
+}
+
+
+
+
+let handlers = {}
+handlers.handleError = handleError;
+handlers.handleNoLogin = handleNoLogin;
+
+
+module.exports = handlers;

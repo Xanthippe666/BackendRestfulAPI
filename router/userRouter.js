@@ -10,7 +10,7 @@ let userModel = sequelize.models.user;
 
 
 //Import helper function
-const handleError = require('./helperHandlers.js')
+const handler = require('./helperHandlers.js')
 
 ////////////////////////////RESTFUL API/////////////////////////
 /*
@@ -40,11 +40,11 @@ router.post('/add', (req, res) => {
 		});
 	})
 	.catch((e) => {
-		handleError(e, res)
+		handler.handleError(e, res)
 	})
 	
 })
-////////////////////////////////End of Register/////////////////////
+////////////////////////////////End of Register User/////////////////////
 
 
 /*
@@ -52,8 +52,12 @@ router.post('/add', (req, res) => {
  * Login the user based on the following fields:
 	- email
 	- password
+	
+ *   If successful, the session will be logged-in for the user, unlocking
+ *  other api calls, like view/add friend, view/add comments
  */
 router.post('/login', (req, res) => {
+	
 	
 	let {email, password} = req.body;
 	
@@ -73,6 +77,11 @@ router.post('/login', (req, res) => {
 			}
 			throw error;
 		}else{	
+			
+			//Save the logged-in username as a session
+			req.session.username = data.username
+			//console.log(req.session.username);
+			
 			res.send({
 				status: "success",
 				data: {
@@ -82,20 +91,35 @@ router.post('/login', (req, res) => {
 		}
 		
 	}).catch((e) => {
-		handleError(e, res)
+		handler.handleError(e, res)
 	})
 });
-//////////////////////End of Login//////////////////////////
+//////////////////////End of Login User//////////////////////////
 
 
 
 /*
  * POST
+ * ONLY AFTER LOGIN SUCCESSFUL
  * Add a friend
 	You will need at least 2 users to test this functionality.
  */
 router.post('/friendAdd', (req, res)=>{
-	let {currentUser, toAddUser} = req.body;
+	
+	
+	//Can only add friends if an user has already logged-in during the session
+	if(req.session.username == undefined || req.session.username.length == 0){
+		res.send({
+			status: "failed",
+			message: "No user logged-in! Please log-in before adding friends"
+		})
+		return;
+	}
+	
+	//if user logged-in, continue
+	//let {currentUser, toAddUser} = req.body;
+	 let currentUser = req.session.username;
+	 let {toAddUser} = req.body;
 	 
 	//Containers for the two users to add each other
 	let userJSON; 
@@ -218,6 +242,14 @@ router.post('/friendAdd', (req, res)=>{
 		//Check if friend is added already or not
 		if(!friendList.includes(userJSON.id.toString())){	
 			friendList.push(userJSON.id);
+		}else{
+			let error = {
+				type: "custom",
+				status: "failed",
+				message: "The user " + toAddUserJSON.username + " is already friends with " + userJSON.username 
+			};
+			 
+			throw error;
 		}
 		
 		return userModel.update({friends: friendList.toString()}, {where:toAddUserJSON})
@@ -234,7 +266,7 @@ router.post('/friendAdd', (req, res)=>{
 		});
 	})
 	.catch((e) => {
-		handleError(e, res)
+		handler.handleError(e, res)
 	})
 	
 });
@@ -243,11 +275,25 @@ router.post('/friendAdd', (req, res)=>{
 
 /*
  * GET
+ * ONLY CAN BE DONE AFTER USER LOG-IN
  * View friends
  * The user should be able to view a list of users that they have added as friends.
  */
 router.get('/viewFriends', (req, res) => {
-	let username = (req.query.username || req.body.username);
+	
+	
+	//Can only add friends if an user has already logged-in during the session
+	if(req.session.username == undefined || req.session.username.length == 0){
+		res.send({
+			status: "failed",
+			message: "No user logged-in! Please log-in before adding friends"
+		})
+		return;
+	}
+	
+	//if user logged-in, continue
+	 let username = req.session.username;
+	
 	let friendList;
 	let currentUser;
 		
@@ -298,7 +344,7 @@ router.get('/viewFriends', (req, res) => {
 		
 	})
 	.catch((e) => {
-		handleError(e, res)
+		handler.handleError(e, res)
 	})
 	
 	
@@ -325,7 +371,7 @@ router.get('/view', (req, res) => {
 	}).catch((e) => {
 		//console.log(e.original.code);
 		//console.log(e)
-		handleError(e, res)
+		handler.handleError(e, res)
 		
 		//res.send(JSON.stringify(users,0,2));
 	})
@@ -334,5 +380,29 @@ router.get('/view', (req, res) => {
 
 
 ///////////////////////////End of view all users/////////////////////////////////
+
+/*
+ * GET
+ * Logout user
+ */
+router.get('/logout', (req, res) => {
+	
+	if(req.session.username == undefined || req.session.username.length == 0){
+		res.send({
+			status: "failed",
+			message: "No user to log-out!"
+		})
+	}else{
+		let temp = req.session.username
+		req.session.username = ""; //clear the session
+		
+		res.send({
+			status: "success",
+			message: "User " + temp + " logged-out!"
+		})
+	}
+	
+})
+
 
 module.exports = router;

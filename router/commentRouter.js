@@ -8,17 +8,27 @@ let sequelize = db.sequelize;
 let commentModel = sequelize.models.comment;
 
 //Import helper function
-const handleError = require('./helperHandlers.js')
+const handler = require('./helperHandlers.js')
 
 ////////////////////////////RESTFUL API/////////////////////////
 /*
  * POST
+ * CAN ONLY BE USED ONCE LOGGED-IN
  * Save a comment into the database, following the same schema as in the samples provided in `comments.json`.
  */
 router.post('/add', (req, res) => {
-	let {text} = req.body;
 	
-	//console.log(text, Date.now())
+	//Can only post comments if an user has already logged-in during the session
+	if(req.session.username == undefined || req.session.username.length == 0){
+		res.send({
+			status: "failed",
+			message: "No user logged-in! Please log-in before posting comments"
+		})
+		return;
+	}
+	
+	//if user logged-in, continue
+	let {text} = req.body;
 	
 	let commentObj = {text: text, timestamp: Date.now()/1000};
 	
@@ -32,7 +42,7 @@ router.post('/add', (req, res) => {
 		});
 	})
 	.catch((e) => {
-		handleError(e, res);
+		handler.handleError(e, res);
 	})
 	
 	
@@ -41,10 +51,21 @@ router.post('/add', (req, res) => {
 
 /*
  * GET
+ * CAN ONLY BE USED ONCE LOGGED-IN
  * Returns a list of comments, sorted from newest to oldest.
  */
 router.get('/view', (req, res) => {
 	
+	//Can only post comments if an user has already logged-in during the session
+	if(req.session.username == undefined || req.session.username.length == 0){
+		res.send({
+			status: "failed",
+			message: "No user logged-in! Please log-in before viewing comments"
+		})
+		return;
+	}
+	
+	//if user logged-in, continue
 	commentModel.findAll({order: sequelize.literal('timestamp DESC')}).then((data) => {
 		
 		res.send({
@@ -55,7 +76,7 @@ router.get('/view', (req, res) => {
 		});
 		
 	}).catch((e) => {
-		handleError(e, res);
+		handler.handleError(e, res);
 	})
 	
 });
