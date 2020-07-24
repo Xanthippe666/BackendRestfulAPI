@@ -6,7 +6,7 @@ A back-end restful API mimicing a social network service
 * node.js/express.js (server + restful API)
 
 ### links
-github: [https://github.com/Xanthippe666/BackendRestfulAPI](https://github.com/Xanthippe666/BackendRestfulAPI) 
+github: [https://github.com/Xanthippe666/BackendRestfulAPI](https://github.com/Xanthippe666/BackendRestfulAPI) <br>
 postman API documentation: [https://documenter.getpostman.com/view/12097905/T1DjmLGc](https://documenter.getpostman.com/view/12097905/T1DjmLGc)
 
 ### How to use and start
